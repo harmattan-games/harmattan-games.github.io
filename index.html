@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harmattan Games</title>
+<meta name="description" content="Les jeux vidéo de Harmattan Games, un souffle nouveau depuis l'Afrique.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'><rect width='10' height='10' fill='%2316192e'/><circle cx='5' cy='5' r='3' fill='%23f0a04b'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Karla:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--night:#16192e;--dusk:#3a2b3a;--sun:#f0a04b;--teal:#8fdad2;--sand:#f3e3c8;--dust:#b5a590;
+--px:"Pixelify Sans","Courier New",monospace;--body:Karla,system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{background:var(--night);color:var(--sand);font-family:var(--body);line-height:1.6;scroll-behavior:smooth}
+body{min-height:100vh}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+
+.hero{position:relative;overflow:hidden;padding:clamp(4rem,12vw,9rem) 1.5rem clamp(6rem,14vw,11rem);
+background:linear-gradient(var(--night) 0%,var(--dusk) 55%,#a9663a 100%)}
+.sun{position:absolute;right:12%;bottom:-70px;width:min(34vw,260px);aspect-ratio:1;background:var(--sun);
+border-radius:50%;opacity:.85;filter:blur(1px);box-shadow:0 0 90px 30px rgba(240,160,75,.35)}
+.wind{position:absolute;left:-40%;height:3px;background:linear-gradient(90deg,transparent,rgba(243,227,200,.55),transparent);
+animation:blow 2.6s cubic-bezier(.2,.6,.3,1) both}
+.wind:nth-child(2){top:28%;width:45%;animation-delay:.1s}
+.wind:nth-child(3){top:44%;width:60%;animation-delay:.35s}
+.wind:nth-child(4){top:60%;width:38%;animation-delay:.6s}
+.wind:nth-child(5){top:74%;width:52%;animation-delay:.2s}
+@keyframes blow{to{transform:translateX(320%)}}
+.hero-in{position:relative;max-width:920px;margin:0 auto}
+h1{font-family:var(--px);font-weight:700;font-size:clamp(2.6rem,9vw,5.8rem);line-height:1;letter-spacing:.01em}
+.lead{margin-top:1.4rem;max-width:34ch;font-size:clamp(1.1rem,2.4vw,1.4rem);color:var(--sand)}
+
+main{max-width:1100px;margin:0 auto;padding:3.5rem 1.5rem 4rem}
+h2{font-family:var(--px);font-size:1.9rem;font-weight:500;margin-bottom:2rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:2.2rem}
+.game{background:#1f2340;border:3px solid var(--sand);box-shadow:7px 7px 0 var(--sun);display:flex;flex-direction:column}
+.media{background:#10132a;border-bottom:3px solid var(--sand)}
+.media iframe{display:block;width:100%;border:0}
+.media img,.ph{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.ph{display:grid;place-items:center;font-family:var(--px);font-size:3rem;color:var(--teal);
+background:repeating-conic-gradient(#1a1e3a 0 25%,#151832 0 50%) 0 0/24px 24px}
+.info{padding:1.2rem 1.3rem 1.4rem;display:flex;flex-direction:column;gap:.6rem;flex:1}
+.badge{align-self:flex-start;font-family:var(--px);font-size:.95rem;background:var(--teal);color:var(--night);padding:.1rem .6rem}
+.game h3{font-family:var(--px);font-size:1.5rem;font-weight:700;line-height:1.15}
+.game p{color:var(--dust);flex:1}
+.btn{align-self:flex-start;margin-top:.4rem;font-weight:600;text-decoration:none;background:var(--sun);color:var(--night);
+padding:.55rem 1rem;border:3px solid var(--sand);transition:transform .12s}
+.btn:hover{transform:translate(-2px,-2px)}
+.empty{color:var(--dust)}
+footer{padding:2rem 1.5rem 3rem;text-align:center;color:var(--dust);font-size:.95rem}
+@media (prefers-reduced-motion:reduce){.wind{animation:none;opacity:0}.btn{transition:none}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="sun" aria-hidden="true"></div>
+  <i class="wind" aria-hidden="true"></i><i class="wind" aria-hidden="true"></i><i class="wind" aria-hidden="true"></i><i class="wind" aria-hidden="true"></i>
+  <div class="hero-in">
+    <h1>Harmattan<br>Games</h1>
+    <p class="lead">Des jeux qui soufflent depuis l'Afrique, à jouer sur mobile et sur navigateur.</p>
+  </div>
+</header>
+
+<main>
+  <h2>Nos jeux</h2>
+  <div class="grid" id="games"><p class="empty">Chargement des jeux…</p></div>
+</main>
+
+<footer>© <span id="y"></span> Harmattan Games</footer>
+
+<script>
+document.getElementById('y').textContent = new Date().getFullYear();
+
+function platformOf(url, custom){
+  if(custom) return custom;
+  let h = '';
+  try{ h = new URL(url).hostname }catch(e){}
+  if(h.includes('itch.io')) return 'itch.io';
+  if(h.includes('play.google')) return 'Play Store';
+  if(h.includes('gara')) return 'Gara Store';
+  return h.replace('www.','') || 'Lien';
+}
+
+function el(tag, cls, text){
+  const e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(text) e.textContent = text;
+  return e;
+}
+
+fetch('games.json').then(r => r.json()).then(games => {
+  const box = document.getElementById('games');
+  box.textContent = '';
+  if(!games.length){ box.append(el('p','empty','Les premiers jeux arrivent bientôt.')); return; }
+  games.forEach(g => {
+    const card = el('article','game');
+    const media = el('div','media');
+    if(g.embed){
+      const f = document.createElement('iframe');
+      f.src = g.embed;
+      f.loading = 'lazy';
+      f.title = g.title;
+      f.height = g.embedHeight || (g.embed.includes('/embed/') ? 167 : 460);
+      f.setAttribute('allowfullscreen','');
+      media.append(f);
+    } else if(g.image){
+      const i = document.createElement('img');
+      i.src = g.image; i.alt = g.title; i.loading = 'lazy';
+      media.append(i);
+    } else {
+      media.append(el('div','ph', g.title.charAt(0)));
+    }
+    const info = el('div','info');
+    const name = platformOf(g.url, g.platform);
+    info.append(el('span','badge',name), el('h3','',g.title));
+    if(g.description) info.append(el('p','',g.description));
+    const a = el('a','btn','Voir sur ' + name);
+    a.href = g.url; a.target = '_blank'; a.rel = 'noopener';
+    info.append(a);
+    card.append(media, info);
+    box.append(card);
+  });
+}).catch(() => {
+  document.getElementById('games').textContent = 'Impossible de charger la liste des jeux.';
+});
+</script>
+</body>
+</html>
